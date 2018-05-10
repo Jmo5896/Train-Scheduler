@@ -1,0 +1,21 @@
+.jumbotron {
+    background-color: blanchedalmond;
+    text-align: center;
+}
+
+.card-header {
+    background-color: teal;
+    color: blanchedalmond;
+}
+
+.card-body {
+    background-color: blanchedalmond;
+}
+
+.btn {
+    background-color: teal;
+}
+
+form {
+    width: 100%;
+}
