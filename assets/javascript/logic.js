@@ -19,13 +19,20 @@
 
     function calculateMinutesAway(freq, firstTrain) {
       var f = Number(freq);
-      var timeDifference = (moment().format('X') / 60) - (moment(firstTrain, 'HH:mm').format('X') / 60);
-
-      var trainArrived = Math.floor(timeDifference / f);
-      var lastTrain = moment(((moment(firstTrain, 'HH:mm').format('X') / 60) + (f * trainArrived)) * 60, 'X').format('HH:mm');
-      // console.log(lastTrain);
+      var convertStartTime = moment(firstTrain, 'HH:mm').format('X') / 60; //unix in min
+      var convertCurrentTime = moment().format('X') / 60; //unix in min
+      // console.log(convertStartTime);
+      var timeDifference = convertCurrentTime - convertStartTime;
+      // console.log(timeDifference / f);
+      var timesTrainArrived = Math.floor(timeDifference / f);
+      // console.log(timesTrainArrived);
+      var lastTrainUnix = (convertStartTime + (f * timesTrainArrived)) * 60; //unix in min
+      // console.log(lastTrainUnix);
+      var nextArr = (lastTrainUnix / 60) + f;
       
-      return f - (moment(lastTrain, 'HH:mm').format('mm') % f);
+      // console.log('nextArr: ' + nextArr + ' lastTrainUnix: ' + lastTrainUnix);
+      // console.log(nextArr - convertCurrentTime);
+      return Math.round(nextArr - convertCurrentTime);
           
     }
       
