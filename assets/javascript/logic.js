@@ -17,22 +17,23 @@
       
     }
 
-    function calculateNextArrival(freq, firstTrain) {
-      var firstTimeConverted = moment(firstTrain, 'HH:mm').subtract(1, 'years');
-      var currentTime = moment();
-      var diffTime = moment().diff(firstTimeConverted, 'minutes');
-      var tRemainder = diffTime % freq;
-      var tMinutesTillTrain = freq - tRemainder;
-      console.log(firstTimeConverted);
-      console.log(currentTime);
-      console.log(diffTime);
-      console.log(tRemainder);
-      console.log(tMinutesTillTrain);
-      
+    function calculateMinutesAway(freq, firstTrain) {
+      var timeDifference = (moment().format('X') / 60) - (moment(firstTrain, 'HH:mm').format('X') / 60);
+
+      var trainArrived = Math.floor(timeDifference / freq);
+      var lastTrain = moment(((moment(firstTrain, 'HH:mm').format('X') / 60) + (freq * trainArrived)) * 60, 'X').format('HH:mm');
+      return freq - (moment(lastTrain, 'HH:mm').format('mm') % freq);
+          
     }
+      
 
-    function calculateMinutesAway(frequency) {
+    function calculateNextArrival(freq, firstTrain) {
+      var timeDifference = (moment().format('X') / 60) - (moment(firstTrain, 'HH:mm').format('X') / 60);
 
+      var trainArrived = Math.floor(timeDifference / freq);
+      var lastTrain = moment(((moment(firstTrain, 'HH:mm').format('X') / 60) + (freq * trainArrived)) * 60, 'X').format('HH:mm');
+      var minAway =  freq - (moment(lastTrain, 'HH:mm').format('mm') % freq);
+      return moment(((moment().format('X') / 60) + minAway) * 60, 'X').format('HH:mm');
     }
 
   // Initialize Firebase
@@ -57,9 +58,7 @@
       
       destination: $('#input-destination').val().trim(),
       firstTrainTime: $('#input-first-train-time').val().trim(),
-      frequency: $('#input-frequency').val().trim(),
-      nextArrival: '',
-      minutesAway: 'test'
+      frequency: $('#input-frequency').val().trim()
       
     };
 
@@ -76,20 +75,22 @@
 
   database.ref().on('value', function(snapshot, preChildKey) {
    
+    
+    
     for (let trainName in snapshot.val()) {
       let train = {
         trainName: trainName,
         destination: snapshot.val()[trainName].destination,
         firstTrainTime: snapshot.val()[trainName].firstTrainTime,
         frequency: snapshot.val()[trainName].frequency,
-        nextArrival: snapshot.val()[trainName].nextArrival,
-        minutesAway: snapshot.val()[trainName].minutesAway
+        nextArrival: calculateNextArrival(snapshot.val()[trainName].frequency, snapshot.val()[trainName].firstTrainTime),
+        minutesAway: calculateMinutesAway(snapshot.val()[trainName].frequency, snapshot.val()[trainName].firstTrainTime)
       };
       
       addTrainRow(train); 
     }
-
-   calculateNextArrival(3, moment());
+    
+    
   });
 
 
